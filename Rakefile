@@ -1,6 +1,15 @@
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 
+if RUBY_ENGINE == 'jruby'
+  require 'rake/javaextensiontask'
+
+  Rake::JavaExtensionTask.new('did_you_mean') do |ext|
+    ext.name    = "binding_capturer"
+    ext.lib_dir = "lib/did_you_mean"
+  end
+end
+
 Rake::TestTask.new do |task|
   task.libs << "test"
 
@@ -28,12 +37,7 @@ Rake::TestTask.new("test:extra_features") do |task|
   task.ruby_opts << "-rdid_you_mean/extra_features"
 end
 
-if RUBY_ENGINE != 'jruby'
-  task default: %i(test test:verbose_formatter test:extra_features)
-else
-  task default: %i(test test:verbose_formatter)
-end
-
+task default: %i(test test:verbose_formatter test:extra_features)
 
 namespace :test do
   namespace :accuracy do
